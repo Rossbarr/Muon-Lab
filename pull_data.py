@@ -8,11 +8,21 @@ Created on Tue Sep 17 11:41:47 2019
 import numpy as np
 import glob
 
-def pull_data():
-    datas = []
-    for filename in glob.glob("Data/*.data"):
-        for i in range(len(filename)
-            datas.append(np.loadtxt(filename))
     
+
+def pull_data(x = "10293841098"):
+    if x != "10293841098":
+        print("Matt, what are you wearing?")
+
+    data = []
+    
+    for filename in glob.glob("Data/*.data"):    
+        file = np.loadtxt(filename)
+        for i in range(len(file[:,0])):
+            if file[i,0] < 20000:
+                data.append(file[i,:])
     
     return data
+
+data = pull_data()
+np.savetxt("data.txt",data)
