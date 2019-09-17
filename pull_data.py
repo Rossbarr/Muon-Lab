@@ -1,6 +1,6 @@
 """
 Created on Tue Sep 17 11:41:47 2019
-Finished on Tue Sep 17 17:29:11 2019
+Finished on Tue Sep 17  2019
 
 @author: Barrett
 
@@ -16,31 +16,33 @@ This file contains the 2darray the function spits out, so one may examine it.
 import numpy as np  # we use numpy for its excellent handling of data
 import glob         # we use glob for it excellent handling of files
 
-def pull_data(x = "10293841098"):
+def pull_data():
     """
     pull_data function
         inputs
-            x
-                optional; if not 10293841098, then prints funny statement
+            none
 
         outputs
-            data
-                numpy.ndarray; 2d array containing time length of decay and
-                time of occurance
-                
-    """
-    if x != "10293841098":
-        print("Matt, what are you wearing?")
+            time_length_of_decay
+                array 
+                contains the time length of the decays (in ns) of the muons
 
-    data = []
+            time_of_occurance
+                array
+                contains the time when the decay happened
+                output is in seconds since Jan 1 00:00:00 1970
+    """
+    time_length_of_decay = []
+    time_of_occurance = []
     
     for filename in glob.glob("Data/*.data"):    
         file = np.loadtxt(filename)
         for i in range(len(file[:,0])):
             if file[i,0] < 20000:
-                data.append(file[i,:])
+                time_length_of_decay.append(file[i,0])
+                time_of_occurance.append(file[i,1])
     
-    return data
+    return time_length_of_decay, time_of_occurance
 
-data = pull_data()
-np.savetxt("data.txt",data)
+time_length_of_decay, time_of_occurance = pull_data()
+np.savetxt("data.txt",[time_length_of_decay,time_of_occurance])
