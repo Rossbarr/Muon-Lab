@@ -12,4 +12,4 @@ with open("Data/9-10-19_12-6.data","r") as f:
 
 plt.hist(data)
 plt.show()
-plt.save
+plt.savefig("Plots/TEMP.png")
