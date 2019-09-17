@@ -9,17 +9,9 @@ import numpy as np
 import scipy as sp
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+from pull_data import pull_data
 
-
-Data1 = np.loadtxt("Data/9-10-19_12-6.data")
-
-Time = Data1[:,1]
-Detection = Data1[:,0]
-
-Muon = []
-for i in Detection:
-    if i < 20000:
-        Muon.append(i)
+data = pull_data()
 
 counts, bins, patches = plt.hist(Muon)
 
