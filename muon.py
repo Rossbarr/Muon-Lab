@@ -31,7 +31,7 @@ time = []
 for i in range(len(bin_edges)-1):
 	time.append((bin_edges[i]+bin_edges[i+1])/2.)
 popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts, p0=(1, 1e-6, 1))
-popt_custom, pcov_custom = curve_fit(custom_fit, time, counts, p0=(50, 300, 3000, 160, 0))
+popt_custom, pcov_custom = curve_fit(custom_fit, time, counts, p0=(popt_exp[0]/2, 0.5/popt_exp[1], 0.5/popt_exp[1], popt_exp[0]/2, popt_exp[2]))
 
 x_fit = np.linspace(0, 17500, 1000)
 y_exp_fit = exponential_decay(x_fit, *popt_exp)
@@ -41,12 +41,11 @@ y_pos_muons = pos_muons(x_fit, *popt_custom)
 
 plt.plot(x_fit,y_exp_fit,color="red",label="Exponential Decay")
 plt.plot(x_fit,y_custom_fit,color="green",label="Custom Fit")
-#plt.plot(x_fit,y_neg_muons,color="orange",label="Negative Muons")
-#plt.plot(x_fit,y_pos_muons,color="cyan",label="Positive Muons")
+plt.plot(x_fit,y_neg_muons,color="orange",label="Negative Muons")
+plt.plot(x_fit,y_pos_muons,color="cyan",label="Positive Muons")
 plt.legend()
 plt.xlabel("Decay Time (ns)")
 plt.ylabel("Counts")
-plt.show()
 plt.savefig("Plots/"+data_name+".png")
 
 perr_exp = np.sqrt(np.diag(pcov_exp))
@@ -61,3 +60,5 @@ print("tau_0 = "+str(popt_custom[1])+"     Error in tau_0: "+str(perr_custom[1])
 print("tau_c = "+str(popt_custom[2])+"     Error in tau_c: "+str(perr_custom[2]))
 print("A_pos = "+str(popt_custom[3])+"     Error in A_pos: "+str(perr_custom[3]))
 print("C = "+str(popt_custom[4])+"     Error in C: "+str(perr_custom[4]))
+
+plt.show()
