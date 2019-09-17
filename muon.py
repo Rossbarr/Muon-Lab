@@ -14,8 +14,8 @@ with open("Data/"+data_name+".data","r") as f:
                 	data.append(int(temp[0]))
 		line = f.readline()
 
-def exponential_decay(x,a,b,c):
-	return a*np.exp(-b*x) + c
+def exponential_decay(t,N_0,tau,delta):
+	return N_0*np.exp(-t/tau) + delta
 
 def custom_fit(t,A_neg,tau_0,tau_c,A_pos,C):
 	return A_neg*np.exp(-t*(1/tau_0+1/tau_c)) + A_pos*np.exp(-t/tau_0)
@@ -30,8 +30,14 @@ counts, bin_edges, _ = plt.hist(data)
 time = []
 for i in range(len(bin_edges)-1):
 	time.append((bin_edges[i]+bin_edges[i+1])/2.)
-popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts, p0=(1, 1e-6, 1))
-popt_custom, pcov_custom = curve_fit(custom_fit, time, counts, p0=(popt_exp[0]/2, 0.5/popt_exp[1], 0.5/popt_exp[1], popt_exp[0]/2, popt_exp[2]))
+popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts, p0=(1, 2000, 1),bounds=((0,1800,0),(np.inf,2400,np.inf)))
+popt_custom, pcov_custom = curve_fit(custom_fit, 
+					time, 
+					counts, 
+					p0=(15, popt_exp[1], popt_exp[1], popt_exp[0]/2, popt_exp[2]),
+					bounds=(
+						(10, 1400, 0, 10, -np.inf), 
+						(2000, 3000, 10000, np.inf, np.inf)))
 
 x_fit = np.linspace(0, 17500, 1000)
 y_exp_fit = exponential_decay(x_fit, *popt_exp)
@@ -50,10 +56,10 @@ plt.savefig("Plots/"+data_name+".png")
 
 perr_exp = np.sqrt(np.diag(pcov_exp))
 perr_custom = np.sqrt(np.diag(pcov_custom))
-print("Fitted histogram with a*exp(-b*x)+c")
-print("a = "+str(popt_exp[0])+"	Error in a: "+str(perr_exp[0]))
-print("b = "+str(popt_exp[1])+"     Error in b: "+str(perr_exp[1]))
-print("c = "+str(popt_exp[2])+"     Error in c: "+str(perr_exp[2]))
+print("Fitted histogram with N_0*exp(-t/tau)+delta")
+print("N_0 = "+str(popt_exp[0])+"	Error in N_0: "+str(perr_exp[0]))
+print("tau = "+str(popt_exp[1])+"     Error in tau: "+str(perr_exp[1]))
+print("delta = "+str(popt_exp[2])+"     Error in delta: "+str(perr_exp[2]))
 print("\nFitted histogram with A_neg*np.exp(-t*(1/tau_0+1/tau_c))+A_pos*np.exp(-t/tau_0)")
 print("A_neg = "+str(popt_custom[0])+"	Error in A_neg: "+str(perr_custom[0]))
 print("tau_0 = "+str(popt_custom[1])+"     Error in tau_0: "+str(perr_custom[1]))
