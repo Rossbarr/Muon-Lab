@@ -3,16 +3,11 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import numpy as np
 from scipy.optimize import curve_fit
+from pull_data import pull_data
 data_name = sys.argv[1]
 
-data = []
-with open("Data/"+data_name+".data","r") as f:
-	line = f.readline()
-	while line:
-		temp = line.split(" ")
-		if int(temp[0]) < 20000:
-                	data.append(int(temp[0]))
-		line = f.readline()
+data = pull_data(0)
+data = data[:,0]
 
 def exponential_decay(x,a,b,c):
 	return a*np.exp(-b*x) + c
