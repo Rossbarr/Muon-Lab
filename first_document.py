@@ -13,6 +13,9 @@ from pull_data import pull_data
 
 decay, time = pull_data()
 
+for i in range(len(time)):
+    time[i] = time[i] - time[0]
+
 plt.hist(time)
 
 #counts, bins, patches = plt.hist(data[:,0])

@@ -10,7 +10,8 @@ The data will be a 2d array containing time length of decay in the [:,0] (or
 left) column and the time of occurance in the [:,1] (or right) column.
 
 Running this document will create (or replace) a txt file called data.txt.
-This file contains the 2darray the function spits out, so one may examine it.
+This file contains both arrays the function spits out (concatonated), so one 
+may examine it.
 """
 
 import numpy as np  # we use numpy for its excellent handling of data
