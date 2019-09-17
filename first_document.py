@@ -21,21 +21,26 @@ for i in Detection:
     if i < 20000:
         Muon.append(i)
 
-n, bins, patches = plt.hist(Muon)
+counts, bins, patches = plt.hist(Muon)
 
 def exponential_decay(x, a, b, c):
     return a*np.exp(b*x) - c
 
-m = []
+def custom_fit(t,A_neg,tau_0,tau_c,A_pos,C):
+	return A_neg*np.exp(-t*(1/tau_0+1/tau_c))+A_pos*np.exp(-t/tau_0)
+
+x = []
 for i in range(len(bins)-1):
-    m.append((bins[i] + bins[i+1])/2)
+    x.append((bins[i] + bins[i+1])/2)
 
-params, pcov = curve_fit(exponential_decay, n, m, p0 = [1,1e-6,1])
+popt, pcov = curve_fit(exponential_decay, counts, x, p0 = [160,1e-6, 1])
 
-y = exponential_decay(n, params[0], params[1], params[2])
+y = []
+for i in range(len(x)):
+    y.append(exponential_decay(x[i], popt[0], popt[1], popt[2]))
 
 plt.hist(Muon, label = "Data")
-plt.plot(n, y, label = "Fit")
+plt.plot(y, x, label = "Fit")
 plt.legend()
 plt.figure(figsize = [8,10])
 plt.show()
