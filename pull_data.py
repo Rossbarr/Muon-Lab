@@ -27,6 +27,8 @@ def pull_data():
             time_length_of_decay
                 array 
                 contains the time length of the decays (in ns) of the muons
+                gets rid of values of muons that are not fully decayed or
+                values when the detector detects nothing
 
             time_of_occurance
                 array
