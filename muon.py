@@ -4,15 +4,16 @@ from scipy import stats
 import numpy as np
 from scipy.optimize import curve_fit
 data_name = sys.argv[1]
+from pull_data import pull_data
 
+"""
 data = []
-with open("Data/"+data_name+".data","r") as f:
-	line = f.readline()
-	while line:
-		temp = line.split(" ")
-		if int(temp[0]) < 20000:
-                	data.append(int(temp[0]))
-		line = f.readline()
+with open("data.txt","r") as f:
+	data = f.readline().split(" ")
+
+"""
+data = pull_data()[0]
+
 
 def exponential_decay(t,N_0,tau,delta):
 	return N_0*np.exp(-t/tau) + delta
@@ -26,7 +27,7 @@ def neg_muons(t,A_neg,tau_0,tau_c,A_pos,C):
 def pos_muons(t,A_neg,tau_0,tau_c,A_pos,C):
 	return A_pos*np.exp(-t/tau_0)
 
-counts, bin_edges, _ = plt.hist(data)
+counts, bin_edges, _ = plt.hist(data,bins=100)
 time = []
 for i in range(len(bin_edges)-1):
 	time.append((bin_edges[i]+bin_edges[i+1])/2.)
@@ -34,12 +35,12 @@ popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts, p0=(1, 2000, 1),
 popt_custom, pcov_custom = curve_fit(custom_fit, 
 					time, 
 					counts, 
-					p0=(15, popt_exp[1], popt_exp[1], popt_exp[0]/2, popt_exp[2]),
+					p0=(15, 2200, 2043, popt_exp[0]/2, popt_exp[2]),
 					bounds=(
-						(10, 1400, 0, 10, -np.inf), 
-						(2000, 3000, 10000, np.inf, np.inf)))
+						(0, 2150, 2042, 0, -np.inf), 
+						(np.inf, 2250, 2044, np.inf, np.inf)))
 
-x_fit = np.linspace(0, 17500, 1000)
+x_fit = np.linspace(100, 17500, 100)
 y_exp_fit = exponential_decay(x_fit, *popt_exp)
 y_custom_fit = custom_fit(x_fit, *popt_custom)
 y_neg_muons = neg_muons(x_fit, *popt_custom)
