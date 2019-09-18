@@ -9,13 +9,15 @@ import numpy as np
 import scipy as sp
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-from pull_data import pull_data
 
-decay, time = pull_data()
+data = np.loadtxt('data.txt')
+
+decay = data[0,:]
+time = data[1,:]
 
 time0 = []
 for i in range(len(time)-1):
     time0.append(time[i+1] - time[1])
 
-plt.hist(time0,bins=100)
+plt.hist(time0,bins=1000)
 
