@@ -22,11 +22,12 @@ The second method is what we do for the majority of the project.
 import numpy as np  # We use numpy for its excellent handling of data.
 import glob         # We use glob for it excellent handling of files.
 
-def pull_data():
+def pull_data(filename = None):
     """
     pull_data function
         inputs
-            none
+            filename
+		which file to read, defaults to None which will read them all
 
         outputs
             time_length_of_decay
@@ -43,14 +44,22 @@ def pull_data():
     time_length_of_decay = []
     time_of_occurance = []
     
-    print("Number of files: " + str(len(glob.glob("Data/*.data"))))
-    for filename in glob.glob("Data/*.data"):    
-        file = np.loadtxt(filename)
+    if not filename:
+        print("Number of files: " + str(len(glob.glob("Data/*.data"))))
+        for filename in glob.glob("Data/*.data"):    
+            file = np.loadtxt(filename)
+            for i in range(len(file[:,0])):
+                if file[i,0] < 20000:
+                    time_length_of_decay.append(file[i,0])
+                    time_of_occurance.append(file[i,1])
+    else:
+        print("Reading " + str(filename))
+        file = np.loadtxt("Data/"+filename)
         for i in range(len(file[:,0])):
             if file[i,0] < 20000:
                 time_length_of_decay.append(file[i,0])
                 time_of_occurance.append(file[i,1])
-    
+            
     return time_length_of_decay, time_of_occurance
 
 # time_length_of_decay, time_of_occurance = pull_data()

@@ -32,14 +32,14 @@ counts, bin_edges, _ = plt.hist(data,bins=30)
 time = []
 for i in range(len(bin_edges)-1):
 	time.append((bin_edges[i]+bin_edges[i+1])/2.)
-popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts, p0=(1, 2000, 1),bounds=((0,2000,0),(np.inf,2400,np.inf)))
+popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts, p0=(1, 2000, 1),bounds=((0,0,0),(np.inf,np.inf,np.inf)))
 popt_custom, pcov_custom = curve_fit(custom_fit, 
 					time, 
 					counts, 
-					p0=(15, 2200, 2000, popt_exp[0]/2, popt_exp[2]),
+					p0=(15, popt_exp[1], 2043, popt_exp[0]/2, popt_exp[2]),
 					bounds=(
-						(0, 0, 0, 0, -np.inf), 
-						(np.inf, np.inf, np.inf, np.inf, np.inf)))
+						(0, 0, 1900, 0, -np.inf), 
+						(np.inf, np.inf, 2100, np.inf, np.inf)))
 
 x_fit = np.linspace(100, 17500, 100)
 y_exp_fit = exponential_decay(x_fit, *popt_exp)
