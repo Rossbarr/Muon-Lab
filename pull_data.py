@@ -43,6 +43,7 @@ def pull_data():
     time_length_of_decay = []
     time_of_occurance = []
     
+    print("Number of files: " + str(len(glob.glob("Data/*.data"))))
     for filename in glob.glob("Data/*.data"):    
         file = np.loadtxt(filename)
         for i in range(len(file[:,0])):
@@ -52,8 +53,8 @@ def pull_data():
     
     return time_length_of_decay, time_of_occurance
 
-time_length_of_decay, time_of_occurance = pull_data()
+# time_length_of_decay, time_of_occurance = pull_data()
 # The above command calls the function.
 
-np.savetxt("data.txt",[time_length_of_decay,time_of_occurance])
+# np.savetxt("data.txt",[time_length_of_decay,time_of_occurance])
 # The above command saves the output to a file called "data.txt".
