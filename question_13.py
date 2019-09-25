@@ -11,6 +11,7 @@ with open("data.txt","r") as f:
 	data = f.readline().split(" ")
 
 """
+
 data = pull_data()[0]
 print("length of data: " + str(len(data)))
 
