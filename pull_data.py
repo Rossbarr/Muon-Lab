@@ -60,9 +60,11 @@ def pull_data(filename = None):
                 time_length_of_decay.append(file[i,0])
                 time_of_occurance.append(file[i,1])
             
+    print("The Data has ", len(time_length_of_decay), "lines.")
     return time_length_of_decay, time_of_occurance
 
 if '__name__' == '__main__':
+    print("Rewriting data.txt")
     # The above command checks if this is being ran from here.
     time_length_of_decay, time_of_occurance = pull_data()
     # The above command calls the function.
