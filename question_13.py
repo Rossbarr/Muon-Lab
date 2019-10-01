@@ -5,8 +5,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 from pull_data import pull_data
 
-#data = np.loadtxt("data.txt")[0]
-data = pull_data()[0]
+data = np.loadtxt("data.txt")[0]
+#data = pull_data()[0]
 
 n=0
 tau_0 = 2213.095735211033
