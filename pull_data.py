@@ -62,8 +62,10 @@ def pull_data(filename = None):
             
     return time_length_of_decay, time_of_occurance
 
-# time_length_of_decay, time_of_occurance = pull_data()
-# The above command calls the function.
-
-# np.savetxt("data.txt",[time_length_of_decay,time_of_occurance])
-# The above command saves the output to a file called "data.txt".
+if '__name__' == '__main__':
+    # The above command checks if this is being ran from here.
+    time_length_of_decay, time_of_occurance = pull_data()
+    # The above command calls the function.
+    np.savetxt("data.txt",[time_length_of_decay,time_of_occurance])
+    # The above command saves the output to a file called "data.txt".
+        

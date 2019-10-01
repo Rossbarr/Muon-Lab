@@ -12,8 +12,7 @@ with open("data.txt","r") as f:
 
 """
 
-data = pull_data()[0]
-print("length of data: " + str(len(data)))
+data = np.loadtxt("data.txt")[0]
 
 n=0
 tau_0 = 2213.095735211033
