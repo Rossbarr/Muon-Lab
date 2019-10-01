@@ -46,8 +46,10 @@ def pull_data(filename = None):
     
     if not filename:
         print("Number of files: " + str(len(glob.glob("Data/*.data"))))
-        for filename in glob.glob("Data/*.data"):    
+        for filename in glob.glob("Data/*.data"):
             file = np.loadtxt(filename)
+            print("Currently reading from", filename)
+            print("This file is",len(file[:,0]),"lines long.")
             for i in range(len(file[:,0])):
                 if file[i,0] < 20000:
                     time_length_of_decay.append(file[i,0])
@@ -60,7 +62,7 @@ def pull_data(filename = None):
                 time_length_of_decay.append(file[i,0])
                 time_of_occurance.append(file[i,1])
             
-    print("The Data has ", len(time_length_of_decay), "lines.")
+    print("The Data has been reduced to ", len(time_length_of_decay), "lines.")
     return time_length_of_decay, time_of_occurance
 
 if __name__ == '__main__':
