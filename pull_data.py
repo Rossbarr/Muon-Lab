@@ -48,6 +48,7 @@ def pull_data(filename = None):
         print("Number of files: " + str(len(glob.glob("Data/*.data"))))
         for filename in glob.glob("Data/*.data"):    
             file = np.loadtxt(filename)
+            print(filename, len(file[:,0]))
             for i in range(len(file[:,0])):
                 if file[i,0] < 20000:
                     time_length_of_decay.append(file[i,0])
