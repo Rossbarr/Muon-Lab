@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import numpy as np
 from scipy.optimize import curve_fit
-data_name = sys.argv[1]
+#data_name = sys.argv[1]
 from pull_data import pull_data
 
 """
@@ -12,7 +12,8 @@ with open("data.txt","r") as f:
 	data = f.readline().split(" ")
 
 """
-data = pull_data()[0]
+
+data = np.loadtxt('data.txt')[0]
 print("length of data: " + str(len(data)))
 
 
@@ -38,8 +39,8 @@ popt_custom, pcov_custom = curve_fit(custom_fit,
 					counts, 
 					p0=(15, popt_exp[1], 2043, popt_exp[0]/2, popt_exp[2]),
 					bounds=(
-						(0, 2000, 2033, 0, -np.inf), 
-						(np.inf, 2400, 2053, np.inf, np.inf)))
+						(0, 2000, 2023, 0, -np.inf), 
+						(np.inf, 2400, 2063, np.inf, np.inf)))
 
 x_fit = np.linspace(100, 17500, 50)
 y_exp_fit = exponential_decay(x_fit, *popt_exp)
@@ -52,9 +53,11 @@ plt.plot(x_fit,y_custom_fit,color="green",label="Custom Fit")
 plt.plot(x_fit,y_neg_muons,color="orange",label="Negative Muons")
 plt.plot(x_fit,y_pos_muons,color="cyan",label="Positive Muons")
 plt.legend()
-plt.xlabel("Decay Time (ns)")
+plt.grid()
+plt.title("Histogram of Event Times")
+plt.xlabel("Event Time (ns)")
 plt.ylabel("Counts")
-plt.savefig("Plots/"+data_name+".png")
+plt.savefig("Plots/Data.png")
 
 perr_exp = np.sqrt(np.diag(pcov_exp))
 perr_custom = np.sqrt(np.diag(pcov_custom))
