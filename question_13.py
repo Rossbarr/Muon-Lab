@@ -1,15 +1,35 @@
-import sys
-import matplotlib.pyplot as plt
-from scipy import stats
-import numpy as np
-from scipy.optimize import curve_fit
-from pull_data import pull_data
+"""
+Created on Tue Sep 17 2019
 
-data = np.loadtxt("data.txt")[0]
+@author: Barrett and Matt
+
+The document does the data analysis required for question 13 in the recommended
+student excersizes from the manual.
+
+Running this reports the mean and variance of how many decays succeeded when
+binned in sizes of 50.
+
+That is, we bin all the data into 50 arrays.
+We count how many data points are less than tau_0 and add that to a tally
+of successes.
+Each bin will have around 31 successes.
+
+We plot a histogram of the distribution of bin succession number. 
+"""
+
+import sys
+import matplotlib.pyplot as plt        # For plotting.
+import numpy as np                     # For numbers and array handling
+
 #data = pull_data()[0]
+data = np.loadtxt("data.txt")[0]
+print("length of data: " + str(len(data)))
+
+# The above two commands load in the data. If you're going to use one, comment
+# the other.
 
 n=0
-tau_0 = 2213.095735211033
+tau_0 = 2200
 averages = []
 while 50*(n+1) < len(data):
 	average_successes = 0
@@ -34,6 +54,9 @@ plt.title("Histogram of Data")
 plt.xlabel("Number of Success in Bins of 50")
 plt.ylabel("Counts")
 plt.grid()
-plt.hist(averages,bins=[15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41],color='green')
-plt.savefig("Question_13")
+plt.hist(averages,
+         bins=[15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 
+               29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+               color='green')
+plt.savefig("Plots/Question_13")
 plt.show()
