@@ -70,7 +70,7 @@ y_pos_muons = pos_muons(x_fit, *popt_custom)
 # Everything below plots the data.
 
 plt.plot(x_fit,y_exp_fit,color="red",label="Exponential Decay")
-plt.plot(x_fit,y_custom_fit,color="green",label="Custom Fit")
+plt.plot(x_fit,y_custom_fit,color="green",label="Expanded Fit")
 plt.plot(x_fit,y_neg_muons,color="orange",label="Negative Muons")
 plt.plot(x_fit,y_pos_muons,color="cyan",label="Positive Muons")
 plt.legend()
