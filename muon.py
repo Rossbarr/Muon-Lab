@@ -29,50 +29,60 @@ print("length of data: " + str(len(data)))
 # the other.
 # We'll now define our different equations for fitting.
 
+possible_gamma_c = np.array([44., 36., 37.3, 36.1, 37., 39.7, 36.5, 30.3, 37.6, 35.2, 37.7, 38.8])*1000.
+possible_gamma_c_error = np.array([10., 4., 1.1, 1.0, 7., 1.3, 2., 7., 0.4, 2., 0.7, 0.5])*1000.
+gamma_c = (possible_gamma_c/possible_gamma_c_error**2).sum()/(1/(possible_gamma_c_error**2)).sum()/1000000000.
+print("gamma_c = " + str(gamma_c))
+
 def exponential_decay(t,N_0,tau,delta):
-	return N_0*np.exp(-t/tau) + delta
+    return N_0*np.exp(-t/tau) + delta
 
-def custom_fit(t,A_neg,tau_0,tau_c,A_pos,C):
-	return A_neg*np.exp(-t*(1/tau_0+1/tau_c)) + A_pos*np.exp(-t/tau_0)
+def custom_fit(t,A_neg,tau_0,A_pos,C):
+    return A_neg*np.exp(-t*(1/tau_0+gamma_c)) + A_pos*np.exp(-t/tau_0) + C
 
-def neg_muons(t,A_neg,tau_0,tau_c,A_pos,C):
-	return A_neg*np.exp(-t*(1/tau_0+1/tau_c))
+def neg_muons(t,A_neg,tau_0,A_pos,C):
+    return A_neg*np.exp(-t*(1/tau_0+gamma_c)) + C*A_neg/(A_pos+A_neg) 
 
-def pos_muons(t,A_neg,tau_0,tau_c,A_pos,C):
-	return A_pos*np.exp(-t/tau_0)
+def pos_muons(t,A_neg,tau_0,A_pos,C):
+    return A_pos*np.exp(-t/tau_0) + C*A_pos/(A_pos+A_neg)
 
 counts, bin_edges, _ = plt.hist(data,bins=50)
 # We need the bin_edges to take to fit the data.
 
 time = []       # Initializes the array we'll create for the
 for i in range(len(bin_edges)-1):                  # This creates the same
-	time.append((bin_edges[i]+bin_edges[i+1])/2.)  # x-axis the histogram uses.
-    
+    time.append((bin_edges[i]+bin_edges[i+1])/2.)  # x-axis the histogram uses.
+
+count_errors = []
+for i in counts:
+    count_errors.append(np.sqrt(i))
     
 popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts,
                                p0=(1, 2000, 1),
+                               sigma = count_errors,
                                bounds=((0,0,0),
-                                       (np.inf,np.inf,np.inf)))
+                               (np.inf,np.inf,np.inf)))
 
-popt_custom, pcov_custom = curve_fit(custom_fit, time, counts, 
-					p0=(15, popt_exp[1], 2043, popt_exp[0]/2, popt_exp[2]),
-					bounds=(
-						(0, 2000, 2023, 0, -np.inf), 
-						(np.inf, 2400, 2063, np.inf, np.inf)))
+popt_custom, pcov_custom = curve_fit(custom_fit, time, counts,
+                                     p0=(15, popt_exp[1], popt_exp[0]/2, popt_exp[2]),
+                                     bounds=(
+                                             (0, 2000, 0, -np.inf), 
+                                             (np.inf, 2400, np.inf, np.inf)))
 # These commands fit the data to the two functions defined above.
 
-x_fit = np.linspace(100, 17500, 50)                 # This creates the lines
-y_exp_fit = exponential_decay(x_fit, *popt_exp)     # we'll use to plot it
-y_custom_fit = custom_fit(x_fit, *popt_custom)      # against the data.
+# This creates the lines we'll use to plot against the data.
+x_fit = np.linspace(100, 17500, 50)                
+y_exp_fit = exponential_decay(x_fit, *popt_exp)     
+y_custom_fit = custom_fit(x_fit, *popt_custom)      
 y_neg_muons = neg_muons(x_fit, *popt_custom)
 y_pos_muons = pos_muons(x_fit, *popt_custom)
 
 # Everything below plots the data.
 
 plt.plot(x_fit,y_exp_fit,color="red",label="Exponential Decay")
-plt.plot(x_fit,y_custom_fit,color="green",label="Expanded Fit")
 plt.plot(x_fit,y_neg_muons,color="orange",label="Negative Muons")
 plt.plot(x_fit,y_pos_muons,color="cyan",label="Positive Muons")
+plt.plot(x_fit,y_custom_fit,color="black",label="Expanded Fit")
 plt.legend()
 plt.grid()
 plt.title("Histogram of Event Times")
@@ -84,15 +94,19 @@ plt.savefig("Plots/Data.png")
 
 perr_exp = np.sqrt(np.diag(pcov_exp))
 perr_custom = np.sqrt(np.diag(pcov_custom))
+
 print("Fitted histogram with N_0*exp(-t/tau) + delta")
 print("N_0 = "+str(popt_exp[0])+"	Error in N_0: "+str(perr_exp[0]))
 print("tau = "+str(popt_exp[1])+"     Error in tau: "+str(perr_exp[1]))
 print("delta = "+str(popt_exp[2])+"     Error in delta: "+str(perr_exp[2]))
-print("\nFitted histogram with A_neg*np.exp(-t*(1/tau_0+1/tau_c)) + A_pos*np.exp(-t/tau_0) + C")
+print("\nFitted histogram with A_neg*np.exp(-t*(1/tau_0+gamma_c)) + A_pos*np.exp(-t/tau_0) + C")
 print("A_neg = "+str(popt_custom[0])+"      Error in A_neg: "+str(perr_custom[0]))
 print("tau_0 = "+str(popt_custom[1])+"     Error in tau_0: "+str(perr_custom[1]))
-print("tau_c = "+str(popt_custom[2])+"     Error in tau_c: "+str(perr_custom[2]))
-print("A_pos = "+str(popt_custom[3])+"     Error in A_pos: "+str(perr_custom[3]))
-print("C =     "+str(popt_custom[4])+"     Error in C:     "+str(perr_custom[4]))
+print("A_pos = "+str(popt_custom[2])+"     Error in A_pos: "+str(perr_custom[2]))
+print("C =     "+str(popt_custom[3])+"     Error in C:     "+str(perr_custom[3]))
+
+print(pcov_custom)
 
 plt.show()
+
+
