@@ -28,15 +28,19 @@ print("Number of files: " + str(len(glob.glob("Data/*.data"))))
 
 list_of_events = []
 list_of_decays = []
+list_of_files  = []
 for filename in glob.glob("Data/*.data"):
-    print('WORKING ON FILE',filename)
-    list_of_events.append(pull_data(filename = filename,
-                                    bound = 40000))
-    list_of_decays.append(pull_data(filename = filename,
-                                    bound = 20000))
-    print('DONE WITH FILE',filename)
+    file = pd.read_csv(filename,
+                       sep = " ",
+                       header = None,
+                       dtype = np.float64)
+    file.columns = ["clock_output","occurance_time"]
+    decays = file[file["clock_output"] < 20000]
+    events = file[file["clock_output"] < 40000]
+    list_of_events.append(events)
+    list_of_decays.append(decays)
+    list_of_files.append(file)
 
-print('hello')
 print("This list is ",len(list_of_events),"long.")
 
 total_time_seconds = []
@@ -45,17 +49,24 @@ total_events = []
 total_decays = []
 
 for i in range(len(list_of_events)):
-    events = len(list_of_events[i])
     trial = pd.DataFrame(list_of_events[i])
     trial.columns = ["event","occurance_time"]
-    
-    time_seconds = np.max(trial["occurance_time"]) - np.min(trial["occurance_time"])
-    time_hours = time_seconds/60/60
-    
+    events = len(list_of_events[i])
+
     trial_decays = pd.DataFrame(list_of_decays[i])
     trial_decays.columns = ["decay","occurance_time"]
-    decays = trial_decays["decay"]
-    
+    decays = len(trial_decays["decay"])
+   
+    time = pd.DataFrame(list_of_files[i])
+    time.columns = ["event","occurance_time"]
+    time_seconds = np.max(time["occurance_time"]) - np.min(time["occurance_time"])
+    time_hours = time_seconds/60/60
+
+    total_time_seconds.append(time_seconds)
+    total_time_hours.append(time_hours)
+    total_events.append(events)
+    total_decays.append(decays)
+
     print("---------------")
     print("Run",i,"lasted",time_hours,"hours.")
     print("Run",i,"had",events,"events.")
@@ -64,10 +75,6 @@ for i in range(len(list_of_events)):
     print("There were",decays,"decays for this run.")
     print("This means there were",decays/time_seconds,"decays per second")
     print("or",time_seconds/decays,"seconds between decays.")
-    total_time_seconds.append(time_seconds)
-    total_time_hours.append(time_hours)
-    total_events.append(events)
-    total_decays.append(decays)
 
 print("------TOTAL------")
 print("This means we had a total of",np.sum(total_events),"events")

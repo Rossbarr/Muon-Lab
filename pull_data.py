@@ -19,8 +19,9 @@ The second method is what we do for the majority of the project.
 
 import numpy as np  # We use numpy for its excellent handling of data.
 import glob         # We use glob for it excellent handling of files.
+import math as mth
 
-def pull_data(filename = None, bound = 20000):
+def pull_data(filename = None):
     """
     pull_data function
         inputs
@@ -48,7 +49,7 @@ def pull_data(filename = None, bound = 20000):
             file = np.loadtxt(filename)             # Reads the files in. 
             print(filename, len(file[:,0]))         # Print Statement.
             for i in range(len(file[:,0])):                 # Finds the "good"
-                if file[i,0] < bound:                       # data points and
+                if file[i,0] < 20000:                       # data points and
                     time_length_of_decay.append(file[i,0])  # Reads them into
                     time_of_occurance.append(file[i,1])     # the arrays.
     
@@ -56,7 +57,7 @@ def pull_data(filename = None, bound = 20000):
         file = np.loadtxt(filename)                     # Reads the file in.
         print('Working on',filename)
         for i in range(len(file[:,0])):                 # Finds the "good" data
-            if file[i,0] < bound:                       # points and reads them
+            if file[i,0] < 20000:                       # points and reads them
                 time_length_of_decay.append(file[i,0])  # into the arrays.
                 time_of_occurance.append(file[i,1])
 
@@ -66,7 +67,8 @@ if __name__ == '__main__':
     # The above command checks if this is being ran from here.
     print("Rewriting data.txt")
     time_length_of_decay, time_of_occurance = pull_data()
+    data = [time_length_of_decay, time_of_occurance]
     # The above command calls the function.
-    np.savetxt("data.txt",[time_length_of_decay,time_of_occurance])
+    np.savetxt("data.txt",data)
     # The above command saves the output to a file called "data.txt".
         
