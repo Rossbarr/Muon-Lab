@@ -26,36 +26,27 @@ print("Number of files: " + str(len(glob.glob("Data/*.data"))))
 #These print statements will help unerstand how many files you're reading.
 # The following line goes through the files and reads them in.
 
-list_of_events = []
-list_of_decays = []
+list_of_files = []
+list_of_clean_files = []
 for filename in glob.glob("Data/*.data"):
-    print('WORKING ON FILE',filename)
-    list_of_events.append(pull_data(filename = filename,
-                                    bound = 40000))
-    list_of_decays.append(pull_data(filename = filename,
-                                    bound = 20000))
-    print('DONE WITH FILE',filename)
+    file = np.loadtxt(filename)           
+    print("Working on",filename,"which has",len(file),"lines.") 
+    list_of_files.append(pull_data(filename,'events'))
+    list_of_clean_files.append(pull_data(filename)[0])
 
-print('hello')
-print("This list is ",len(list_of_events),"long.")
+print("This list is ",len(list_of_files),"long.")
 
 total_time_seconds = []
 total_time_hours = []
 total_events = []
 total_decays = []
-
-for i in range(len(list_of_events)):
-    events = len(list_of_events[i])
-    trial = pd.DataFrame(list_of_events[i])
+for i in range(len(list_of_files)):
+    events = len(list_of_files[i])
+    trial = pd.DataFrame(list_of_files[i])
     trial.columns = ["event","occurance_time"]
-    
     time_seconds = np.max(trial["occurance_time"]) - np.min(trial["occurance_time"])
     time_hours = time_seconds/60/60
-    
-    trial_decays = pd.DataFrame(list_of_decays[i])
-    trial_decays.columns = ["decay","occurance_time"]
-    decays = trial_decays["decay"]
-    
+    decays = len(list_of_clean_files[i])
     print("---------------")
     print("Run",i,"lasted",time_hours,"hours.")
     print("Run",i,"had",events,"events.")

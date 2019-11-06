@@ -20,7 +20,7 @@ The second method is what we do for the majority of the project.
 import numpy as np  # We use numpy for its excellent handling of data.
 import glob         # We use glob for it excellent handling of files.
 
-def pull_data(filename = None, bound = 20000):
+def pull_data(filename = None, measure = 'decays'):
     """
     pull_data function
         inputs
@@ -42,8 +42,20 @@ def pull_data(filename = None, bound = 20000):
     """
     time_length_of_decay = []   # Setting up arrays
     time_of_occurance = []      # Setting up arrays
+    
+    if measure == 'decays':
+        bound = 20000
+    elif measure == 'events':
+        bound = 40000
+    elif measure == 'all':
+        bound = 10**10
+    else:
+        print("ERROR: Measure not set. Please set measure to be decays,events, or all. You probably want decays.")
 
     if not filename:
+        print("Number of files: " + str(len(glob.glob("Data/*.data"))))
+        # These print statements will help unerstand how many files you're
+        # reading.
         for filename in glob.glob("Data/*.data"):   # Goes through the files.
             file = np.loadtxt(filename)             # Reads the files in. 
             print(filename, len(file[:,0]))         # Print Statement.
@@ -53,13 +65,15 @@ def pull_data(filename = None, bound = 20000):
                     time_of_occurance.append(file[i,1])     # the arrays.
     
     else:
-        file = np.loadtxt(filename)                     # Reads the file in.
-        print('Working on',filename)
+        print("Reading " + str(filename))       # Print Statement.
+        file = np.loadtxt(filename)     # Reads the file in.
         for i in range(len(file[:,0])):                 # Finds the "good" data
             if file[i,0] < bound:                       # points and reads them
                 time_length_of_decay.append(file[i,0])  # into the arrays.
                 time_of_occurance.append(file[i,1])
-
+            
+    print("The Data has ", len(time_length_of_decay), "lines.")
+    # This print statement will help understand the number of points you have.
     return time_length_of_decay, time_of_occurance
 
 if __name__ == '__main__':
