@@ -42,14 +42,20 @@ def exponential_decay(t,N_0,tau,delta):
 def custom_fit(t,A_neg,tau_0,A_pos,C):
     return (A_neg*np.exp(-t*(1/tau_0+gamma_c)) + A_pos*np.exp(-t/tau_0) + C)
 
+def jacobian(t,A_neg,tau_0,A_pos,C):
+    dA_neg = np.exp(-t*(1/tau_0+gamma_c))
+    dtau_0 = (A_neg*np.exp(-t*(1/tau_0+gamma_c)) + A_pos*np.exp(-t/tau_0))*t*tau_0**(-2)
+    dA_pos = np.exp(-t/tau_0)
+    dC = np.ones(len(t))
+    return np.transpose([dA_neg, dtau_0, dA_pos, dC])
+
 def neg_muons(t,A_neg,tau_0,A_pos,C):
     return A_neg*np.exp(-t*(1/tau_0+gamma_c)) + C*A_neg/(A_pos+A_neg) 
 
 def pos_muons(t,A_neg,tau_0,A_pos,C):
     return A_pos*np.exp(-t/tau_0) + C*A_pos/(A_pos+A_neg)
 
-counts, bin_edges, _ = plt.hist(data,bins=50,color='grey')
-plt.show()
+counts, bin_edges, _ = plt.hist(data,bins=50)
 # We need the bin_edges to take to fit the data.
 
 time = []       # Initializes the array we'll create for the
@@ -67,12 +73,14 @@ popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts,
                                bounds=((0,0,0),
                                        (np.inf,np.inf,np.inf)))
 
+#print(np.transpose([popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2]]))
+#print(jacobian(time[0],popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2]))
 popt_custom, pcov_custom = curve_fit(custom_fit, time, counts,
                                      sigma = count_errors,
-                                     p0=(1,1,1,1),
-#                                     p0=(popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2]),
+                                     jac = jacobian,
+                                     p0=(popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2]),
                                      bounds=((0, 0, 0, 0), 
-                                             (np.inf, np.inf, np.inf, np.inf)))
+                                             (5000., 5000., 5000., 100.)))
 # These commands fit the data to the two functions defined above.
 
 # This creates the lines we'll use to plot against the data.
@@ -83,6 +91,14 @@ y_neg_muons = neg_muons(x_fit, *popt_custom)
 y_pos_muons = pos_muons(x_fit, *popt_custom)
 
 # Everything below plots the data.
+plt.plot(x_fit,y_exp_fit,color="black",label="Exponential Decay")
+plt.grid()
+plt.title("Histogram of Event Times")
+plt.xlabel("Event Time (ns)")
+plt.ylabel("Counts")
+plt.legend()
+plt.savefig("Plots/exp_decay.png")
+plt.show()
 
 plt.plot(x_fit,y_exp_fit,color="red",label="Exponential Decay")
 plt.plot(x_fit,y_neg_muons,color="orange",label="Negative Muons")
