@@ -79,7 +79,7 @@ popt_custom, pcov_custom = curve_fit(custom_fit, time, counts,
                                      sigma = count_errors,
 #                                     jac = jacobian,
                                      p0=(popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2],gamma_c)
-                                     bounds=((0, 0, 0, 0,gamma_c-0.000005),
+                                     bounds=((0, 0, 0, 0,gamma_c-0.000005)
                                              (5000., 5000., 5000., 100.,gamma_c+0.000005)
 # These commands fit the data to the two functions defined above.
 
