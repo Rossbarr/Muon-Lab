@@ -42,17 +42,18 @@ def exponential_decay(t,N_0,tau,delta):
 def custom_fit(t,A_neg,tau_0,A_pos,C,gamma_c):
     return (A_neg*np.exp(-t*(1/tau_0+gamma_c)) + A_pos*np.exp(-t/tau_0) + C)
 
-def jacobian(t,A_neg,tau_0,A_pos,C):
+def jacobian(t,A_neg,tau_0,A_pos,C,gamma_c):
     dA_neg = np.exp(-t*(1/tau_0+gamma_c))
     dtau_0 = (A_neg*np.exp(-t*(1/tau_0+gamma_c)) + A_pos*np.exp(-t/tau_0))*t*tau_0**(-2)
     dA_pos = np.exp(-t/tau_0)
     dC = np.ones(len(t))
-    return np.transpose([dA_neg, dtau_0, dA_pos, dC])
+    dgamma_c = A_neg*np.exp(-t*(1/tau_0+gamma_c))*(-t)
+    return np.transpose([dA_neg, dtau_0, dA_pos, dC, dgamma_c])
 
-def neg_muons(t,A_neg,tau_0,A_pos,C):
+def neg_muons(t,A_neg,tau_0,A_pos,C,gamma_c):
     return A_neg*np.exp(-t*(1/tau_0+gamma_c)) + C*A_neg/(A_pos+A_neg) 
 
-def pos_muons(t,A_neg,tau_0,A_pos,C):
+def pos_muons(t,A_neg,tau_0,A_pos,C,gamma_c):
     return A_pos*np.exp(-t/tau_0) + C*A_pos/(A_pos+A_neg)
 
 counts, bin_edges, _ = plt.hist(data,bins=50)
@@ -77,10 +78,10 @@ popt_exp, pcov_exp = curve_fit(exponential_decay, time, counts,
 #print(jacobian(time[0],popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2]))
 popt_custom, pcov_custom = curve_fit(custom_fit, time, counts,
                                      sigma = count_errors,
-#                                     jac = jacobian,
-                                     p0=(popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2],gamma_c)
-                                     bounds=((0, 0, 0, 0,gamma_c-0.000005),
-                                             (5000., 5000., 5000., 100.,gamma_c+0.000005)
+                                     jac = jacobian,
+                                     p0=(popt_exp[0]/2, popt_exp[1], popt_exp[0]/2, popt_exp[2],gamma_c),
+                                     bounds=((0, 0, 0, 0,gamma_c-2*err_gamma_c),
+                                             (5000., 5000., 5000., 100.,gamma_c+2*err_gamma_c)))
 # These commands fit the data to the two functions defined above.
 
 # This creates the lines we'll use to plot against the data.
@@ -126,6 +127,8 @@ print("tau_0 = "+str(popt_custom[1])+"     Error in tau_0: "+str(perr_custom[1])
 print("A_pos = "+str(popt_custom[2])+"     Error in A_pos: "+str(perr_custom[2]))
 print("A_neg = "+str(popt_custom[0])+"      Error in A_neg: "+str(perr_custom[0]))
 print("C =     "+str(popt_custom[3])+"     Error in C:     "+str(perr_custom[3]))
+print("gamma_c = "+str(popt_custom[4])+"   Error in gamma_c: "+str(perr_custom[4]))
+print("expected for gamma_c = " +str(gamma_c) + " err_gamma_c: " + str(err_gamma_c))
 print("The charge ratio is",popt_custom[2]/popt_custom[0])
 
 print(pcov_custom)
